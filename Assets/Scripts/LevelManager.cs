@@ -15,16 +15,36 @@ public class LevelManager : MonoBehaviour
     [SerializeField]
     private CameraMovement cameraMovement;
 
-    private Point blueSpawn, redSpawn;
+    [SerializeField]
+    private Transform map;
+
+    public Portal bluePortal { get; set; }
+
+    public Point blueSpawn, redSpawn;
 
     [SerializeField]
     private GameObject portal;
+    [SerializeField]
+    private GameObject portalRed;
 
     public Dictionary<Point, TileScript> tiles { get; set; }
 
+    public static LevelManager self;
 
-   
-   
+
+    private void Initialize()
+    {
+
+        if (self == null)
+        {
+            Debug.Log("init");
+            self = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
+    }
 
     /// <summary>
     ///  Свойства дял возврата размера тайла
@@ -36,9 +56,33 @@ public class LevelManager : MonoBehaviour
 
     void Start()
     {
+        Initialize();
         CreateLevel();
     }
 
+    private Point mapSize;
+
+    private Stack<Node> path;
+
+    public Stack<Node> Path
+    {
+        get
+        {
+            if (path == null)
+            {
+                GeneratePath();
+            }
+            return new Stack<Node>(new Stack<Node>(path));
+        }
+
+    }
+
+    public void SwapInt(int a, int b)
+    {
+        int temp = a;
+        a = b;
+        b = temp;
+    }
 
 
     /// <summary>
@@ -51,6 +95,8 @@ public class LevelManager : MonoBehaviour
 
 
         string[] mapData = ReadLevelText();
+
+        mapSize = new Point(mapData[0].ToCharArray().Length, mapData.Length);
 
         //Вычисление длины карты по координате x 
         int mapX = mapData[0].ToCharArray().Length;
@@ -75,6 +121,8 @@ public class LevelManager : MonoBehaviour
 
         maxTile = tiles[new Point(mapX - 1, mapY - 1)].transform.position;
         cameraMovement.SetLimits(new Vector3(maxTile.x + TileSize, maxTile.y - TileSize));
+
+        SpawnPortals();
     }
 
     /// <summary>
@@ -93,11 +141,9 @@ public class LevelManager : MonoBehaviour
         TileScript newTile = Instantiate(tilePrefabs[tileIndex]).GetComponent<TileScript>();
 
         //изменение положения тайла при помощи переменных x,y и worldStart
-        newTile.Setup(new Point(x, y), new Vector3(worldStart.x + (TileSize * x), worldStart.y - (TileSize * y), 0));
+        newTile.Setup(new Point(x, y), new Vector3(worldStart.x + (TileSize * x), worldStart.y - (TileSize * y), 0), map);
 
-        tiles.Add(new Point(x, y), newTile);
 
-        SpawnPortals();
     }
 
     private string[] ReadLevelText()
@@ -113,7 +159,24 @@ public class LevelManager : MonoBehaviour
     {
         blueSpawn = new Point(0, 0);
 
-        Instantiate(portal, tiles[blueSpawn].transform.position, Quaternion.identity);
+        GameObject tmp = Instantiate(portal, tiles[blueSpawn].transform.position, Quaternion.identity);
+        bluePortal = tmp.GetComponent<Portal>();
+        bluePortal.name = "BluePortal";
 
+        redSpawn = new Point(17, 5);
+
+        Instantiate(portalRed, tiles[redSpawn].transform.position, Quaternion.identity);
+
+
+    }
+
+    public bool InBounds(Point position)
+    {
+        return position.X >= 0 && position.Y >= 0 && position.X < mapSize.X && position.Y < mapSize.Y;
+    }
+
+    public void GeneratePath()
+    {
+        path = AStar.GetPath(blueSpawn, redSpawn);
     }
 }
