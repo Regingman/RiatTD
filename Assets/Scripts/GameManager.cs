@@ -25,10 +25,25 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Text currencyTxt;
 
+    public int gamePlayLevel;
+
     private int wave = 0;
 
-    [SerializeField]
-    private Text waveText;
+    public int lives = 5;
+
+    public Text waveText;
+
+    public Text levelText;
+
+    public Text WaveText;
+
+    public Text liveText;
+
+    public int Level = 1;
+
+
+
+    public int maxWave = 3;
 
     [SerializeField]
     private GameObject waveBtn;
@@ -94,6 +109,18 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void Restart(int level, int gamePlayLvl)
+    {
+        maxWave = 1 + (level * 2);
+        lives = 5 - gamePlayLvl;
+        Currency = 10 - gamePlayLvl;
+        wave = 0;
+        Level = level;
+        levelText.text = "Level: " + Level;
+        liveText.text = "Lives: " + lives;
+        gamePlayLevel = gamePlayLvl;
+    }
+
     public void BuyTower()
     {
         if (Currency >= clickedBtn.Price)
@@ -117,10 +144,10 @@ public class GameManager : MonoBehaviour
     public void StartWave()
     {
         wave++;
-
-        waveText.text = string.Format("Wave: <color=lime>{0}</color>", wave);
+        waveText.text = string.Format("Wave: <color=lime>{0}</color>", wave) + "\nОсталось волн: " + (maxWave - wave);
         StartCoroutine(SpawnWave());
         waveBtn.SetActive(false);
+        WaveText.text = "Next Wave";
     }
 
     private IEnumerator SpawnWave()
@@ -159,7 +186,19 @@ public class GameManager : MonoBehaviour
         activeMonsters.Remove(monster);
         if (!WaveActive)
         {
-            waveBtn.SetActive(true);
+            if (maxWave - wave == 0)
+            {
+                Level++;
+                waveText.text = "Поздравляю вы победили!";
+                Restart(Level, gamePlayLevel);
+                WaveText.text = "Next Level";
+                waveBtn.SetActive(true);
+
+            }
+            else
+            {
+                waveBtn.SetActive(true);
+            }
         }
     }
 

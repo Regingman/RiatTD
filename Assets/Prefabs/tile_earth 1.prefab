@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 931148518911106105}
   - component: {fileID: -7374700631877642838}
   m_Layer: 0
-  m_Name: tile_earth
+  m_Name: tile_earth 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70,7 +70,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d886bbd62b7a51e4ca603aac9ee4e9f1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 44f7d5f0da46319498d643e86b373165, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

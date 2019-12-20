@@ -115,7 +115,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6be48bc92065b14dbb5d995b6310880, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0.6
+  maxSpeed: 1.5
+  sprite: {fileID: 0}
+  canvas: {fileID: 0}
   healthBar: {fileID: 3194261658668532427}
   health: 30
   maxHealth: 0

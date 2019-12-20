@@ -100,7 +100,7 @@ public static class AStar
         }
 
         //debug
-        // AStarDebugger.self.DebugPath(openList, closedList, finalPath);
+        //AStarDebugger.self.DebugPath(openList, closedList, finalPath);
         return finalPath;
     }
 

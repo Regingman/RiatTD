@@ -7,7 +7,10 @@ public class Tower : MonoBehaviour
     private SpriteRenderer mySpriteRenderer;
     private bool flag = false;
     private Monster target;
+    public GameObject tower;
 
+    public TowerEffect towerEffect;
+    public Color color;
     public Monster Target
     {
         get { return target; }
@@ -69,6 +72,9 @@ public class Tower : MonoBehaviour
             {
                 Debug.Log("Выстрел");
                 Shoot();
+
+
+
                 canAttack = false;
             }
         }
@@ -107,5 +113,23 @@ public class Tower : MonoBehaviour
     void Update()
     {
         Attack();
+        if (target != null)
+        {
+            if (tower != null)
+            {
+                Vector3 mousePosition = target.transform.position; //положение мыши из экранных в мировые координаты
+                var angle = Vector2.Angle(Vector2.up, mousePosition - transform.position);//угол между вектором от объекта к мыше и осью х
+                Debug.Log(tower.transform.rotation + "до");
+                tower.transform.eulerAngles = new Vector3(0f, 0f, tower.transform.position.y < mousePosition.y ? angle : -angle);//немного магии на последок
+                Debug.Log(tower.transform.rotation + "после");
+            }
+        }
     }
+}
+
+
+public enum TowerEffect
+{
+    doubleDamage,
+    slow
 }

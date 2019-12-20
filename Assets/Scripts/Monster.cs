@@ -5,9 +5,15 @@ using UnityEngine;
 public class Monster : MonoBehaviour
 {
     [SerializeField]
-    private float speed;
+    private float maxSpeed;
 
+    private float tempSpeed;
+
+    public SpriteRenderer sprite;
+    private Color color;
     private Stack<Node> path;
+    public Canvas canvas;
+
 
     public SimpleHealthBar healthBar;
 
@@ -22,6 +28,8 @@ public class Monster : MonoBehaviour
     {
         maxHealth = health;
         healthBar.UpdateBar(health, maxHealth);
+        sprite = gameObject.GetComponent<SpriteRenderer>();
+        color = sprite.color;
     }
 
     private void Update()
@@ -37,6 +45,7 @@ public class Monster : MonoBehaviour
         transform.position = LevelManager.self.bluePortal.transform.position;
         StartCoroutine(Scale(new Vector3(0.1f, 0.1f), new Vector3(1f, 1f), false));
         SetPath(LevelManager.self.Path);
+        tempSpeed = maxSpeed;
     }
 
     public IEnumerator Scale(Vector3 from, Vector3 to, bool remove)
@@ -65,7 +74,12 @@ public class Monster : MonoBehaviour
     {
         if (IsActive)
         {
-            transform.position = Vector2.MoveTowards(transform.position, destination, speed * Time.deltaTime);
+            Vector3 mousePosition = destination; //положение мыши из экранных в мировые координаты
+            var angle = Vector2.Angle(Vector2.up, mousePosition - transform.position);//угол между вектором от объекта к мыше и осью х
+            transform.eulerAngles = new Vector3(0f, 0f, transform.position.y < mousePosition.y ? angle : -angle);//немного магии на последок
+            transform.position = Vector2.MoveTowards(transform.position, destination, maxSpeed * Time.deltaTime);
+
+
             if (transform.position == destination)
             {
                 if (path != null && path.Count > 0)
@@ -94,6 +108,14 @@ public class Monster : MonoBehaviour
         if (other.tag == "RedPortal")
         {
             StartCoroutine(Scale(new Vector3(1, 1), new Vector3(0.1f, 0.1f), true));
+            GameManager.self.lives--;
+            GameManager.self.liveText.text = "Lives: " + GameManager.self.lives;
+            if (GameManager.self.lives == 0)
+            {
+                GameManager.self.waveText.text = "К сожалению вы проиграли!";
+                GameManager.self.WaveText.text = "Restart!";
+                GameManager.self.Restart(1, GameManager.self.gamePlayLevel);
+            }
         }
 
 
@@ -104,6 +126,18 @@ public class Monster : MonoBehaviour
             health -= projectile.parent.damage * projectile.parent.level;
             healthBar.UpdateBar(health, maxHealth);
             GameManager.self.Pool.ReleaseObject(projectile.gameObject);
+            sprite.color = projectile.parent.color;
+            switch (projectile.parent.towerEffect)
+            {
+                case TowerEffect.doubleDamage:
+                    health -= projectile.parent.damage * projectile.parent.level;
+                    healthBar.UpdateBar(health, maxHealth);
+                    break;
+                case TowerEffect.slow:
+                    maxSpeed = 0.2f;
+                    break;
+            }
+            Invoke("ColorRe", 0.5f);
             TakeDamage();
         }
     }
@@ -126,6 +160,11 @@ public class Monster : MonoBehaviour
         GameManager.self.RemoveMonster(this);
     }
 
+    void ColorRe()
+    {
+        sprite.color = color;
+        maxSpeed = tempSpeed;
+    }
 
 }
 

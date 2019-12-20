@@ -148,7 +148,8 @@ public class LevelManager : MonoBehaviour
 
     private string[] ReadLevelText()
     {
-        TextAsset bindData = Resources.Load("Level") as TextAsset;
+        int mapNumber = PlayerPrefs.GetInt("mapNumber");
+        TextAsset bindData = Resources.Load("Level" + mapNumber) as TextAsset;
 
         string data = bindData.text.Replace(Environment.NewLine, string.Empty);
 

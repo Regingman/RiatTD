@@ -5,9 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class UI : MonoBehaviour
 {
-    public void GotoGameScene()
+    public void GotoGameScene(int mapNumber)
     {
         SceneManager.LoadScene("Game");
+        PlayerPrefs.SetInt("mapNumber", mapNumber);
     }
 
     public void Exit()
