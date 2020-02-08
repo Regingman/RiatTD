@@ -5,7 +5,7 @@ using UnityEngine;
 public class Hover : MonoBehaviour
 {
     [SerializeField]
-    private SpriteRenderer spriteRenderer;
+    public SpriteRenderer spriteRenderer;
     public bool activate = false;
 
     [SerializeField]
